@@ -83,9 +83,9 @@ public class IrisFlowersExample implements LearningEventListener {
         DataSet dataSet = DataSet.createFromFile(dataSetFile, inputsCount, outputsCount, ",");
 
         // split data into training and test set
-        List<DataSet> trainTestSplit = dataSet.split(60, 40);
-        DataSet trainingSet = trainTestSplit.get(0);
-        DataSet testSet = trainTestSplit.get(1);
+        DataSet[] trainTestSplit = dataSet.split(0.6, 0.4);
+        DataSet trainingSet = trainTestSplit[0];
+        DataSet testSet = trainTestSplit[1];
 
         System.out.println("Creating neural network...");
         MultiLayerPerceptron neuralNet = new MultiLayerPerceptron(TransferFunctionType.TANH,
@@ -144,7 +144,7 @@ public class IrisFlowersExample implements LearningEventListener {
      * @param neuralNet
      * @param dataSet
      */
-    public void evaluate(NeuralNetwork neuralNet, DataSet dataSet) {
+    public void evaluate(NeuralNetwork neuralNet, DataSet testSet) {
 
         System.out.println("Calculating performance indicators for neural network.");
 
@@ -153,7 +153,7 @@ public class IrisFlowersExample implements LearningEventListener {
 
         String[] classLabels = new String[]{"Virginica", "Setosa", "Versicolor"};
         evaluation.addEvaluator(new ClassifierEvaluator.MultiClass(classLabels));
-        evaluation.evaluateDataSet(neuralNet, dataSet);
+        evaluation.evaluate(neuralNet, testSet);
 
         ClassifierEvaluator evaluator = evaluation.getEvaluator(ClassifierEvaluator.MultiClass.class);
         ConfusionMatrix confusionMatrix = evaluator.getResult();
